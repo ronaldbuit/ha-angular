@@ -1,0 +1,21 @@
+<div>
+<h1>Lampen</h1>
+<div class="device-section" *ngFor="let device of devices">
+  <div *ngFor="let command of device.commands" class="device-command">
+    <div *ngIf="command === 'POWER'">
+      <mat-slide-toggle (click)="clickPower(device)"
+        class="example-margin"
+        [color]="'primary'"
+        [checked]="device.powerStatus">
+        {{device.label}}
+      </mat-slide-toggle>
+    </div>
+    <div *ngIf="command === 'Dimmer'">
+      <div class="command-label">Dimmer</div> <mat-slider min="0" max="100" step="1" [(ngModel)]="device.dimmerValue" (change)="setDeviceValue(device, 'Dimmer')"></mat-slider>
+    </div>
+    <div *ngIf="command === 'CT'">
+      <div class="command-label">Color</div> <mat-slider min="153" max="500" step="1" [(ngModel)]="device.colorValue" (change)="setDeviceValue(device, 'CT')"></mat-slider>
+    </div>
+  </div>
+</div>
+</div>

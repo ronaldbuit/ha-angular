@@ -1,0 +1,30 @@
+h1 {
+  margin-left: 22px;
+}
+.device-section {
+  align-content: center;
+  align-items: center;
+  margin-left: 22px;
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.device-command {
+  align-content: center;
+  align-items: center;
+  width: 100%;
+
+  div {
+    width: 100%;
+
+    .command-label {
+      width: 60px;
+      float: left;
+      padding-top: 13px;
+    }
+
+    .mat-slider-horizontal {
+      width: 60%;
+    }
+  }
+}
