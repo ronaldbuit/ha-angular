@@ -1,6 +1,22 @@
-h1 {
+.header {
   margin-left: 22px;
+  position: relative;
+
+  fa-icon {
+    position: absolute;
+    top: 0;
+    font-size: 30px;
+
+    &.lightbulb-on {
+      left: 135px;
+    }
+
+    &.lightbulb {
+      left: 143.5px;
+    }
+  }
 }
+
 .device-section {
   align-content: center;
   align-items: center;
@@ -18,13 +34,34 @@ h1 {
     width: 100%;
 
     .command-label {
-      width: 60px;
+      width: 80px;
       float: left;
       padding-top: 13px;
     }
 
     .mat-slider-horizontal {
-      width: 60%;
+      width: calc(100% - 100px);
+    }
+  }
+
+  .device-label {
+    padding-right: 10px;
+  }
+
+  .light-onoff {
+    padding-left: 5px;
+    font-size: 9px;
+  }
+}
+
+.scheduling-section {
+  margin-left: 22px;
+
+  .date-time {
+    font-size: 10px;
+
+    span {
+      padding-right: 10px;
     }
   }
 }

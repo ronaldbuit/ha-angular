@@ -5,6 +5,9 @@ export interface Device {
   label: string;
   powerStatus: boolean;
   dimmerValue: number;
-  colorValue: number;
+  colorValue1: number;
+  colorValue2: number;
   isAll: boolean;
+  nextOn: Date;
+  nextOff: Date;
 }

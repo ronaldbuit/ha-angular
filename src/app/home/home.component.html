@@ -1,21 +1,36 @@
 <div>
-<h1>Lampen</h1>
-<div class="device-section" *ngFor="let device of devices">
-  <div *ngFor="let command of device.commands" class="device-command">
-    <div *ngIf="command === 'POWER'">
-      <mat-slide-toggle (click)="clickPower(device)"
-        class="example-margin"
-        [color]="'primary'"
-        [checked]="device.powerStatus">
-        {{device.label}}
-      </mat-slide-toggle>
-    </div>
-    <div *ngIf="command === 'Dimmer'">
-      <div class="command-label">Dimmer</div> <mat-slider min="0" max="100" step="1" [(ngModel)]="device.dimmerValue" (change)="setDeviceValue(device, 'Dimmer')"></mat-slider>
-    </div>
-    <div *ngIf="command === 'CT'">
-      <div class="command-label">Color</div> <mat-slider min="153" max="500" step="1" [(ngModel)]="device.colorValue" (change)="setDeviceValue(device, 'CT')"></mat-slider>
+  <div class="header">
+    <h1>Lampen</h1>
+    <fa-icon [icon]="['far', 'lightbulb-on']" *ngIf="oneOn" class="lightbulb-on"></fa-icon>
+    <fa-icon [icon]="['far', 'lightbulb']" *ngIf="!oneOn" class="lightbulb"></fa-icon>
+  </div>
+  <div class="device-section" *ngFor="let device of devices">
+    <div *ngFor="let command of device.commands" class="device-command">
+      <div *ngIf="command === 'POWER'">
+        <mat-slide-toggle (click)="clickPower(device)"
+          class="example-margin"
+          [color]="'primary'"
+          [checked]="device.powerStatus">
+          <span class="device-label">{{device.label}}</span>
+          <span class="light-onoff" *ngIf="device.nextOn"><fa-icon [icon]="['far', 'lightbulb-on']"></fa-icon> {{device.nextOn | date:'HH:mm'}}</span>
+          <span class="light-onoff" *ngIf="device.nextOff"><fa-icon [icon]="['far', 'lightbulb']"></fa-icon> {{device.nextOff | date:'HH:mm'}}</span>
+        </mat-slide-toggle>
+      </div>
+      <div *ngIf="command === 'Dimmer'">
+        <div class="command-label">Dimmer</div> <mat-slider min="0" max="100" step="1" [(ngModel)]="device.dimmerValue" (change)="setDeviceValue(device, 'Dimmer')"></mat-slider>
+      </div>
+      <div *ngIf="command === 'Color'">
+        <div class="command-label">Color wit</div> <mat-slider min="0" max="255" step="1" [(ngModel)]="device.colorValue1" (change)="setDeviceValue(device, 'Color')"></mat-slider><br/>
+        <div class="command-label">Color rood</div> <mat-slider min="0" max="255" step="1" [(ngModel)]="device.colorValue2" (change)="setDeviceValue(device, 'Color')"></mat-slider>
+      </div>
     </div>
   </div>
-</div>
+  <div class="scheduling-section">
+    <mat-checkbox class="example-margin" [color]="'primary'" [(ngModel)]="fromHome" (change)="clickFromHome($event)">Van huis</mat-checkbox><br/>
+    <div *ngIf="currentDateTime$ | async as currentDateTime" class="date-time">
+      <span>{{currentDateTime.current | date:'dd-MM-yyyy HH:mm'}}</span>
+      <fa-icon [icon]="['far', 'sunrise']"></fa-icon><span class="date-time">{{currentDateTime.sunrise | date:'HH:mm'}}</span>
+      <fa-icon [icon]="['far', 'sunset']"></fa-icon><span class="date-time">{{currentDateTime.sunset | date:'HH:mm'}}</span>
+    </div>
+  </div>
 </div>
