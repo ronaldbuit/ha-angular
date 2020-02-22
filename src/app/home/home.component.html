@@ -27,7 +27,7 @@
   </div>
   <div class="scheduling-section">
     <mat-checkbox class="example-margin" [color]="'primary'" [(ngModel)]="fromHome" (change)="clickFromHome($event)">Van huis</mat-checkbox><br/>
-    <div *ngIf="currentDateTime$ | async as currentDateTime" class="date-time">
+    <div *ngIf="currentDateTime" class="date-time">
       <span>{{currentDateTime.current | date:'dd-MM-yyyy HH:mm'}}</span>
       <fa-icon [icon]="['far', 'sunrise']"></fa-icon><span class="date-time">{{currentDateTime.sunrise | date:'HH:mm'}}</span>
       <fa-icon [icon]="['far', 'sunset']"></fa-icon><span class="date-time">{{currentDateTime.sunset | date:'HH:mm'}}</span>

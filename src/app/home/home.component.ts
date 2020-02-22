@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {from, interval, Observable} from 'rxjs';
+import {from, interval, Observable, timer} from 'rxjs';
 import {Device} from '../models/device.model';
 import {DeviceApiService} from '../device-api.service';
 import {SchedulingApiService} from '../scheduling-api.service';
 import {DatetimeInfo} from '../models/datetimeinfo.model';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -14,15 +15,17 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 export class HomeComponent implements OnInit {
   devices: Device[];
   oneOn: boolean;
-  currentDateTime$: Observable<DatetimeInfo>;
+  currentDateTime: DatetimeInfo;
   fromHome: boolean;
 
   constructor(private deviceApiService: DeviceApiService, private schedulingApiService: SchedulingApiService) {
   }
 
   ngOnInit() {
-    interval(1000).subscribe((n) =>
-    this.deviceApiService.getDevices().subscribe(devices => {
+    timer(0, 1000).subscribe(() =>
+    this.deviceApiService.getDevices().pipe(
+      map(devices => devices.filter(device => device.visible))
+    ).subscribe(devices => {
       this.oneOn = false;
       if (!this.devices) {
         this.devices = devices;
@@ -51,9 +54,22 @@ export class HomeComponent implements OnInit {
         }
       });
     }));
-    this.currentDateTime$ = this.schedulingApiService.getCurrentDateTime();
-    interval(15000).subscribe(() => {
-      this.currentDateTime$ = this.schedulingApiService.getCurrentDateTime();
+    timer(0, 15000).subscribe(() => {
+      this.schedulingApiService.getCurrentDateTime().subscribe(nextCurrentDateTime => {
+        if (this.currentDateTime) {
+          if (nextCurrentDateTime.current !== this.currentDateTime.current) {
+            this.currentDateTime.current = nextCurrentDateTime.current;
+          }
+          if (nextCurrentDateTime.sunrise !== this.currentDateTime.sunrise) {
+            this.currentDateTime.sunrise = nextCurrentDateTime.sunrise;
+          }
+          if (nextCurrentDateTime.sunset !== this.currentDateTime.sunset) {
+            this.currentDateTime.sunset = nextCurrentDateTime.sunset;
+          }
+        } else {
+          this.currentDateTime = nextCurrentDateTime;
+        }
+      });
     });
     this.schedulingApiService.getFromHome().subscribe(fromHome => this.fromHome = fromHome);
   }

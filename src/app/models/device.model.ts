@@ -10,4 +10,5 @@ export interface Device {
   isAll: boolean;
   nextOn: Date;
   nextOff: Date;
+  visible: boolean;
 }
