@@ -4,7 +4,7 @@ import {Device} from '../models/device.model';
 import {DeviceApiService} from '../device-api.service';
 import {SchedulingApiService} from '../scheduling-api.service';
 import {DatetimeInfo} from '../models/datetimeinfo.model';
-import {MatCheckboxChange} from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-home',
