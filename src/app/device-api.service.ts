@@ -16,14 +16,14 @@ export class DeviceApiService {
   }
 
   updateDevice(s: Device, cmnd: string, newValue: string): Observable<Device> {
-    return this.httpClient.post<Device>( environment.apiUrl + 'device/' + s.id, {id: s.id, value: newValue, command: cmnd});
+    return this.httpClient.post<Device>( environment.apiUrl + 'device/' + s.topic, {topic: s.topic, value: newValue, command: cmnd});
   }
 
-  onOffSwitch(s: Device, onOff: boolean): Observable<Device> {
-    if (onOff) {
-      return this.httpClient.post<Device>(environment.apiUrl + 'device/' + s.id, {id: s.id, value: 'ON', command: 'POWER'});
-    } else {
-      return this.httpClient.post<Device>(environment.apiUrl + 'device/' + s.id, {id: s.id, value: 'OFF', command: 'POWER'});
-    }
+  all(newValue: string): Observable<void> {
+    return this.httpClient.post<void>( environment.apiUrl + 'alldevices', {value: newValue});
+  }
+
+  party(): Observable<void> {
+    return this.httpClient.post<void>( environment.apiUrl + 'party', {});
   }
 }

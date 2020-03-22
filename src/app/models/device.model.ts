@@ -1,7 +1,11 @@
 export interface Device {
-  id: string;
-  commands: string[];
-  status: string[];
+  topic: string;
+  commands: Command[];
+}
+
+export interface Command {
+  command: string;
+  status: string;
   label: string;
   powerStatus: boolean;
   dimmerValue: number;

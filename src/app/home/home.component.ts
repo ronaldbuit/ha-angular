@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {from, interval, Observable, timer} from 'rxjs';
-import {Device} from '../models/device.model';
+import {Command, Device} from '../models/device.model';
 import {DeviceApiService} from '../device-api.service';
 import {SchedulingApiService} from '../scheduling-api.service';
 import {DatetimeInfo} from '../models/datetimeinfo.model';
@@ -17,15 +17,15 @@ export class HomeComponent implements OnInit {
   oneOn: boolean;
   currentDateTime: DatetimeInfo;
   fromHome: boolean;
+  lightBulbClicked: number;
 
   constructor(private deviceApiService: DeviceApiService, private schedulingApiService: SchedulingApiService) {
+    this.lightBulbClicked = 0;
   }
 
   ngOnInit() {
     timer(0, 1000).subscribe(() =>
-    this.deviceApiService.getDevices().pipe(
-      map(devices => devices.filter(device => device.visible))
-    ).subscribe(devices => {
+    this.deviceApiService.getDevices().subscribe(devices => {
       this.oneOn = false;
       if (!this.devices) {
         this.devices = devices;
@@ -33,26 +33,21 @@ export class HomeComponent implements OnInit {
       } else {
         this.devices.forEach(os => {
           devices.forEach(ns => {
-            if (ns.id === os.id && ns.status !== os.status) {
-              os.status = ns.status;
-              os.nextOff = ns.nextOff;
-              os.nextOn = ns.nextOn;
+            if (os.topic === ns.topic) {
+              os.commands.forEach(oc => {
+                ns.commands.forEach(nc => {
+                  if (nc.command === oc.command) {
+                    oc.status = nc.status;
+                    oc.nextOff = nc.nextOff;
+                    oc.nextOn = nc.nextOn;
+                  }
+                });
+              });
             }
           });
           this.setStatus(os);
         });
       }
-      this.devices.forEach(os => {
-        if (os.isAll) {
-          if (this.oneOn) {
-            os.powerStatus = true;
-            os.label = 'Alles uit';
-          } else {
-            os.powerStatus = false;
-            os.label = 'Alles aan';
-          }
-        }
-      });
     }));
     timer(0, 15000).subscribe(() => {
       this.schedulingApiService.getCurrentDateTime().subscribe(nextCurrentDateTime => {
@@ -75,43 +70,37 @@ export class HomeComponent implements OnInit {
   }
 
   setStatus(s: Device) {
-    s.commands.forEach((command, index) => {
-      if (command === 'POWER') {
-        if (s.status[index] === 'OFF') {
-          s.powerStatus = false;
+    s.commands.forEach((command) => {
+      if (command.command && command.command.indexOf('POWER') === 0) {
+        if (command.status === 'OFF') {
+          command.powerStatus = false;
         } else {
-          s.powerStatus = true;
+          command.powerStatus = true;
           this.oneOn = true;
         }
-      } else if (command === 'Dimmer') {
-        s.dimmerValue = Number(s.status[index]);
-      } else if (command === 'Color') {
-        s.colorValue1 = parseInt(s.status[index].substring(0, 2), 16);
-        s.colorValue2 = parseInt(s.status[index].substring(2, 4), 16);
+      } else if (command.command === 'Dimmer') {
+        command.dimmerValue = Number(command.status);
+      } else if (command.command === 'Color') {
+        command.colorValue1 = parseInt(command.status.substring(0, 2), 16);
+        command.colorValue2 = parseInt(command.status.substring(2, 4), 16);
       }
     });
   }
 
-  clickPower(powerDevice: Device) {
-    if (powerDevice.isAll) {
-      this.deviceApiService.onOffSwitch(powerDevice, !powerDevice.powerStatus).subscribe((returnSwitch: Device) => {
-        powerDevice.powerStatus = !powerDevice.powerStatus;
+  clickPower(powerDevice: Device, command: Command) {
+      this.deviceApiService.updateDevice(powerDevice, command.command, 'toggle').subscribe((returnSwitch: Device) => {
+        command.powerStatus = !command.powerStatus;
       });
-    } else {
-      this.deviceApiService.updateDevice(powerDevice, 'POWER', 'toggle').subscribe((returnSwitch: Device) => {
-        powerDevice.powerStatus = !powerDevice.powerStatus;
-      });
-    }
   }
 
-  setDeviceValue(device: Device, cmnd: string) {
-    if (cmnd === 'Dimmer') {
-      this.deviceApiService.updateDevice(device, cmnd, device.dimmerValue + '').subscribe((returnSwitch: Device) => {
+  setDeviceValue(device: Device, command: Command) {
+    if (command.command === 'Dimmer') {
+      this.deviceApiService.updateDevice(device, command.command, command.dimmerValue + '').subscribe((returnSwitch: Device) => {
         // do nothing
       });
-    } else if (cmnd === 'Color') {
-      const hexValue = device.colorValue1.toString(16) + device.colorValue2.toString(16);
-      this.deviceApiService.updateDevice(device, cmnd, hexValue).subscribe((returnSwitch: Device) => {
+    } else if (command.command === 'Color') {
+      const hexValue = command.colorValue1.toString(16) + command.colorValue2.toString(16);
+      this.deviceApiService.updateDevice(device, command.command, hexValue).subscribe((returnSwitch: Device) => {
         // do nothing
       });
     }
@@ -119,5 +108,23 @@ export class HomeComponent implements OnInit {
 
   clickFromHome(event: MatCheckboxChange) {
     this.schedulingApiService.setFromHome(this.fromHome).subscribe();
+  }
+
+  all() {
+    if (this.oneOn) {
+      this.deviceApiService.all('OFF').subscribe();
+    } else {
+      this.deviceApiService.all('ON').subscribe();
+    }
+  }
+
+  checkParty() {
+    if (this.lightBulbClicked > 15) {
+      this.deviceApiService.party().subscribe();
+      this.lightBulbClicked = 0;
+    } else if (this.lightBulbClicked > 10) {
+      this.deviceApiService.party().subscribe();
+    }
+    this.lightBulbClicked++;
   }
 }

@@ -1,27 +1,40 @@
 <div>
   <div class="header">
     <h1>Lampen</h1>
-    <fa-icon [icon]="['far', 'lightbulb-on']" *ngIf="oneOn" class="lightbulb-on"></fa-icon>
-    <fa-icon [icon]="['far', 'lightbulb']" *ngIf="!oneOn" class="lightbulb"></fa-icon>
+    <fa-icon [icon]="['far', 'lightbulb-on']" *ngIf="oneOn" class="lightbulb-on" (click)="checkParty()"></fa-icon>
+    <fa-icon [icon]="['far', 'lightbulb']" *ngIf="!oneOn" class="lightbulb" (click)="checkParty()"></fa-icon>
   </div>
   <div class="device-section" *ngFor="let device of devices">
     <div *ngFor="let command of device.commands" class="device-command">
-      <div *ngIf="command === 'POWER'">
-        <mat-slide-toggle (click)="clickPower(device)"
+      <div *ngIf="command.visible && command.command && command.command.indexOf('POWER') === 0" class="power">
+        <mat-slide-toggle (click)="clickPower(device, command)"
           class="example-margin"
           [color]="'primary'"
-          [checked]="device.powerStatus">
-          <span class="device-label">{{device.label}}</span>
-          <span class="light-onoff" *ngIf="device.nextOn"><fa-icon [icon]="['far', 'lightbulb-on']"></fa-icon> {{device.nextOn | date:'HH:mm'}}</span>
-          <span class="light-onoff" *ngIf="device.nextOff"><fa-icon [icon]="['far', 'lightbulb']"></fa-icon> {{device.nextOff | date:'HH:mm'}}</span>
+          [checked]="command.powerStatus">
+          <span class="device-label">{{command.label}}</span>
+          <span class="light-onoff" *ngIf="command.nextOn"><fa-icon [icon]="['far', 'lightbulb-on']"></fa-icon> {{command.nextOn | date:'HH:mm'}}</span>
+          <span class="light-onoff" *ngIf="command.nextOff"><fa-icon [icon]="['far', 'lightbulb']"></fa-icon> {{command.nextOff | date:'HH:mm'}}</span>
         </mat-slide-toggle>
       </div>
-      <div *ngIf="command === 'Dimmer'">
-        <div class="command-label">Dimmer</div> <mat-slider min="0" max="100" step="1" [(ngModel)]="device.dimmerValue" (change)="setDeviceValue(device, 'Dimmer')"></mat-slider>
+      <div *ngIf="command.visible && command.command === 'Dimmer'">
+        <div class="command-label">Dimmer</div> <mat-slider min="0" max="100" step="1" [(ngModel)]="command.dimmerValue" (change)="setDeviceValue(device, command)"></mat-slider>
       </div>
-      <div *ngIf="command === 'Color'">
-        <div class="command-label">Color wit</div> <mat-slider min="0" max="255" step="1" [(ngModel)]="device.colorValue1" (change)="setDeviceValue(device, 'Color')"></mat-slider><br/>
-        <div class="command-label">Color rood</div> <mat-slider min="0" max="255" step="1" [(ngModel)]="device.colorValue2" (change)="setDeviceValue(device, 'Color')"></mat-slider>
+      <div *ngIf="command.visible && command.command === 'Color'">
+        <div class="command-label">Color wit</div> <mat-slider min="0" max="255" step="1" [(ngModel)]="command.colorValue1" (change)="setDeviceValue(device, command)"></mat-slider><br/>
+        <div class="command-label">Color rood</div> <mat-slider min="0" max="255" step="1" [(ngModel)]="command.colorValue2" (change)="setDeviceValue(device, command)"></mat-slider>
+      </div>
+    </div>
+  </div>
+  <div class="device-section">
+    <div class="device-command">
+      <div class="power">
+        <mat-slide-toggle (click)="all()"
+                          class="example-margin"
+                          [color]="'primary'"
+                          [checked]="oneOn">
+          <span class="device-label" *ngIf="oneOn">Alles uit</span>
+          <span class="device-label" *ngIf="!oneOn">Alles aan</span>
+        </mat-slide-toggle>
       </div>
     </div>
   </div>

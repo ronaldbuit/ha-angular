@@ -21,41 +21,46 @@
   align-content: center;
   align-items: center;
   margin-left: 22px;
-  margin-top: 10px;
-  margin-bottom: 40px;
-}
 
-.device-command {
-  align-content: center;
-  align-items: center;
-  width: 100%;
-
-  div {
+  .device-command {
+    align-content: center;
+    align-items: center;
     width: 100%;
 
-    .command-label {
-      width: 80px;
-      float: left;
-      padding-top: 13px;
+    .power {
+      margin-top: 30px;
+      //margin-bottom: 40px;
     }
 
-    .mat-slider-horizontal {
-      width: calc(100% - 100px);
+
+    div {
+      width: 100%;
+
+      .command-label {
+        width: 80px;
+        float: left;
+        padding-top: 13px;
+      }
+
+      .mat-slider-horizontal {
+        width: calc(100% - 100px);
+      }
     }
-  }
 
-  .device-label {
-    padding-right: 10px;
-  }
+    .device-label {
+      padding-right: 10px;
+    }
 
-  .light-onoff {
-    padding-left: 5px;
-    font-size: 9px;
+    .light-onoff {
+      padding-left: 5px;
+      font-size: 9px;
+    }
   }
 }
 
 .scheduling-section {
   margin-left: 22px;
+  margin-top: 30px;
 
   .date-time {
     font-size: 10px;
