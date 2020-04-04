@@ -76,7 +76,9 @@ export class HomeComponent implements OnInit {
           command.powerStatus = false;
         } else {
           command.powerStatus = true;
-          this.oneOn = true;
+          if (command.isAll) {
+            this.oneOn = true;
+          }
         }
       } else if (command.command === 'Dimmer') {
         command.dimmerValue = Number(command.status);
