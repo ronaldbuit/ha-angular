@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {from, interval, Observable, timer} from 'rxjs';
+import {timer} from 'rxjs';
 import {Command, Device} from '../models/device.model';
 import {DeviceApiService} from '../device-api.service';
 import {SchedulingApiService} from '../scheduling-api.service';
 import {DatetimeInfo} from '../models/datetimeinfo.model';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
